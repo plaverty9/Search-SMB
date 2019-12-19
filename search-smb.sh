@@ -17,7 +17,7 @@ k) keywords=${OPTARG};;
 d) depth=${OPTARG};;
 esac
 done
-
+echo "Use Control-z to exit while running."
 if [ -z "$hosts" ]
 then
 	echo "-f is required with an IP or a hosts file"
@@ -33,9 +33,9 @@ fi
 # If it's not empty
 if [ -z "$user" ]
 then
-	cme smb $hosts --shares > smb-shares.txt
+	cme smb $hosts --shares >> smb-shares.txt
 else
-	cme smb $hosts -u $user -p $password --shares > smb-shares.txt
+	cme smb $hosts -u $user -p $password --shares >> smb-shares.txt
 fi
 
 # Default search depth is 3 levels, can be set at the command line
