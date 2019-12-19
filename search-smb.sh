@@ -17,7 +17,7 @@ k) keywords=${OPTARG};;
 d) depth=${OPTARG};;
 esac
 done
-echo "Use Control-z to exit while running."
+
 if [ -z "$hosts" ]
 then
 	echo "-f is required with an IP or a hosts file"
@@ -32,10 +32,10 @@ fi
 # Checks if the user variable is empty, then it does an unauthenticated search for shares
 # If it's not empty
 if [ -z "$user" ]
-then
-	cme smb $hosts --shares >> smb-shares.txt
+then 
+	cme smb $hosts --shares > smb-shares.txt
 else
-	cme smb $hosts -u $user -p $password --shares >> smb-shares.txt
+	cme smb $hosts -u $user -p $password --shares > smb-shares.txt
 fi
 
 # Default search depth is 3 levels, can be set at the command line
@@ -54,20 +54,22 @@ cat grepped-file.txt | perl -pe 's/\e([^\[\]]|\[.*?[a-zA-Z]|\].*?\a)//g' | col -
 rm grepped-file.txt
 
 # Start searching!
-while read -r line;
-do
+while read -r line; 
+do 
 
 # The share name is in the 5th column of the CME output
 share=$(echo $line | awk '{ print $5 }')
+ip=$(echo $line | awk '{ print $2 }')
 
 	# If user is blank, we'll search without creds, otherwise, with creds
        if [ -z "$user" ]
         then
-                echo "Searching $hosts for $share with keyword $keywords"
-                cme smb $hosts --spider $share --depth $depth --pattern $keywords >> share-data.txt
+                echo "Searching $ip for $share with keyword $keywords"
+                cme smb $ip --spider $share --depth $depth --pattern $keywords | grep -v "\[\*\]" | grep -v "\[+\]"  >> share-data.txt  
         else
-                echo "Searching $hosts for $share with keyword $keywords with depth $depth"
-                cme smb $hosts -u $user -p $password --spider $share --depth $depth --pattern $keywords >> share-data.txt
+                echo "Searching $ip for $share with keyword $keywords with depth $depth"
+		#echo "cme smb $ip -u $user -p $password --spider $share --depth $depth --pattern $keywords | grep -v '\[\*\]|\[\+\]'"
+                cme smb $ip -u $user -p $password --spider $share --depth $depth --pattern $keywords | grep -v "\[\*\]" | grep -v "\[+\]"  >> share-data.txt
         fi
 
 
@@ -75,3 +77,4 @@ done < greppedfile.txt
 
 #Don't be rude, clean up after yourself.
 rm greppedfile.txt
+rm smb-shares.txt
