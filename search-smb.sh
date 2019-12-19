@@ -64,11 +64,11 @@ share=$(echo $line | awk '{ print $5 }')
        if [ -z "$user" ]
         then
                 echo "Searching $hosts for $share with keyword $keywords"
-                cme smb $hosts --spider $share --depth $depth --pattern $keywords | tee share-data.txt
+                cme smb $hosts --spider $share --depth $depth --pattern $keywords >> share-data.txt
         else
                 echo "Searching $hosts for $share with keyword $keywords with depth $depth"
-		echo cme smb $hosts -u $user -p $password --spider $share --depth $depth --pattern $keywords | tee share-data.txt
-                cme smb $hosts -u $user -p $password --spider $share --depth $depth --pattern $keywords | tee share-data.txt
+		echo cme smb $hosts -u $user -p $password --spider $share --depth $depth --pattern $keywords >> share-data.txt
+                cme smb $hosts -u $user -p $password --spider $share --depth $depth --pattern $keywords >> share-data.txt
         fi
 
 
